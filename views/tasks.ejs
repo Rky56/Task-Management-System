@@ -1,0 +1,105 @@
+<%- include('partials/header.ejs'); -%>
+
+  <div class="box" id="heading">
+    <h1>
+      <%= listTitle %>
+    </h1>
+  </div>
+  
+  <div class="box">
+    <% for(let item of listItems){ %>
+      <div class="item">
+        <form action="/delete" method="post">
+          <input type="checkbox" onchange="this.form.submit()" name="deleteItemId" value="<%= item.task_id %>">
+        </form>
+
+        <!-- Display task details -->
+        <div id="taskDetails<%=item.task_id%>">
+          <p><strong>Title:</strong> <%= item.title %></p>
+          <p><strong>Description:</strong> <%= item.description %></p>
+          <p><strong>Status:</strong> <%= item.status %></p>
+          <p><strong>Due Date:</strong> <%= item.due_date %></p>
+          <p><strong>Priority:</strong> <%= item.priority %></p>
+        </div>
+
+        <!-- Edit form for all task fields -->
+        <form id="editForm<%= item.task_id %>" class="edit" action="/edit" method="post" hidden>
+          <input type="hidden" name="updatedItemId" value="<%= item.task_id %>">
+
+          <p><strong>Title:</strong>
+            <input type="text" name="updatedItemTitle" value="<%= item.title %>" autocomplete="off" />
+          </p>
+
+          <p><strong>Description:</strong>
+            <textarea name="updatedItemDescription" rows="2"><%= item.description %></textarea>
+          </p>
+
+          <p><strong>Status:</strong>
+            <select name="updatedItemStatus">
+              <option value="Pending" <%= item.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+              <option value="In Progress" <%= item.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+              <option value="Completed" <%= item.status === 'Completed' ? 'selected' : '' %>>Completed</option>
+            </select>
+          </p>
+
+          <p><strong>Due Date:</strong>
+            <input type="date" name="updatedItemDueDate" value="<%= item.due_date %>">
+          </p>
+
+          <p><strong>Priority:</strong>
+            <select name="updatedItemPriority">
+              <option value="Low" <%= item.priority === 'Low' ? 'selected' : '' %>>Low</option>
+              <option value="Medium" <%= item.priority === 'Medium' ? 'selected' : '' %>>Medium</option>
+              <option value="High" <%= item.priority === 'High' ? 'selected' : '' %>>High</option>
+            </select>
+          </p>
+
+          <button class="edit" type="submit">Save</button>
+        </form>
+
+        <!-- Edit button -->
+        <button id="edit<%= item.task_id %>" class="edit" onclick="toggleEdit('<%= item.task_id %>')">
+          <img class="icon" src="/assets/icons/pencil-solid.svg" alt="Edit">
+        </button>
+      </div>
+    <% } %>
+
+    <!-- Form to add a new task -->
+    <form class="item" action="/add" method="post">
+      <input type="text" name="newItemTitle" placeholder="New Task Title" autocomplete="off" autofocus="true" />
+      <textarea name="newItemDescription" placeholder="Task Description"></textarea>
+      <select name="newItemStatus">
+        <option value="Pending">Pending</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
+      <input type="date" name="newItemDueDate">
+      <select name="newItemPriority">
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </select>
+      <button class="add" type="submit">Add Task</button>
+    </form>
+  </div>
+
+  <script>
+    function toggleEdit(id) {
+      var details = document.getElementById("taskDetails" + id);
+      var form = document.getElementById("editForm" + id);
+      var editButton = document.getElementById("edit" + id);
+
+      if (form.hidden) {
+        form.hidden = false;
+        details.hidden = true;
+        editButton.textContent = 'Cancel';
+      } else {
+        form.hidden = true;
+        details.hidden = false;
+        editButton.textContent = '';
+        editButton.innerHTML = '<img class="icon" src="/assets/icons/pencil-solid.svg" alt="Edit">';
+      }
+    }
+  </script>
+
+<%- include('partials/footer.ejs'); -%>
